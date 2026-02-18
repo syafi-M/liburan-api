@@ -1,17 +1,18 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('fs');
+const path = require('path');
 
 async function scrapeByYear(year) {
     try {
-        console.log(`🚀 Sedang mengambil data untuk tahun: ${year}...`);
+        console.log(`🚀 Scraping tahun: ${year}...`);
         const { data } = await axios.get(`https://www.tanggalan.com/${year}`, {
             headers: { 'User-Agent': 'Mozilla/5.0' }
         });
         
         const $ = cheerio.load(data);
         const holidays = [];
-        let currentMonth = "";
+        const monthlyData = {}; // Tempat simpan data per bulan
 
         const monthMap = {
             'januari': '01', 'februari': '02', 'maret': '03', 'april': '04',
@@ -25,6 +26,8 @@ async function scrapeByYear(year) {
             const monthCode = monthMap[monthName];
 
             if (monthCode) {
+                if (!monthlyData[monthCode]) monthlyData[monthCode] = [];
+
                 $(ul).find('li table tr').each((j, tr) => {
                     const cols = $(tr).find('td');
                     if (cols.length >= 2) {
@@ -37,37 +40,39 @@ async function scrapeByYear(year) {
 
                         for (let d = startDay; d <= endDay; d++) {
                             const formattedDay = d.toString().padStart(2, '0');
-                            holidays.push({
+                            const holidayObj = {
                                 date: `${year}-${monthCode}-${formattedDay}`,
                                 holiday_name: name,
                                 is_national_holiday: true
-                            });
+                            };
+                            holidays.push(holidayObj);
+                            monthlyData[monthCode].push(holidayObj);
                         }
                     }
                 });
             }
         });
 
-        if (holidays.length > 0) {
-            fs.writeFileSync(`${year}.json`, JSON.stringify(holidays, null, 2));
-            console.log(`✅ Berhasil menyimpan ${year}.json`);
-        } else {
-            console.log(`⚠️ Data tahun ${year} kosong.`);
-        }
+        // 1. Simpan file Tahunan (root)
+        fs.writeFileSync(`${year}.json`, JSON.stringify(holidays, null, 2));
+
+        // 2. Simpan file Bulanan (di dalam folder api/tahun/bulan.json)
+        const dir = path.join('api', year);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+        Object.keys(monthlyData).forEach(month => {
+            fs.writeFileSync(path.join(dir, `${month}.json`), JSON.stringify(monthlyData[month], null, 2));
+        });
+
+        console.log(`✅ Selesai untuk tahun ${year}. File tahunan & folder /api/${year}/ dibuat.`);
     } catch (error) {
-        console.error(`❌ Gagal scrape tahun ${year}:`, error.message);
+        console.error(`❌ Gagal:`, error.message);
     }
 }
 
 async function main() {
     const args = process.argv.slice(2);
-    // Jika tidak ada argumen, default ke tahun sekarang
     const years = args.length > 0 ? args : [new Date().getFullYear().toString()];
-    
-    for (const year of years) {
-        await scrapeByYear(year);
-    }
-    console.log("\n✨ Semua tugas selesai!");
+    for (const year of years) { await scrapeByYear(year); }
 }
-
 main();
