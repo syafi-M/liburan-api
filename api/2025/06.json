@@ -1,0 +1,22 @@
+[
+  {
+    "date": "2025-06-01",
+    "holiday_name": "Hari Lahir Pancasila",
+    "is_national_holiday": true
+  },
+  {
+    "date": "2025-06-06",
+    "holiday_name": "Hari Raya Idul Adha 1446H",
+    "is_national_holiday": true
+  },
+  {
+    "date": "2025-06-09",
+    "holiday_name": "Cuti Bersama Hari Raya Idul Adha 1446H",
+    "is_national_holiday": true
+  },
+  {
+    "date": "2025-06-27",
+    "holiday_name": "Tahun Baru Islam 1 Muharram 1447H",
+    "is_national_holiday": true
+  }
+]

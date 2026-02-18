@@ -1,0 +1,12 @@
+[
+  {
+    "date": "2025-12-25",
+    "holiday_name": "Hari Raya Natal",
+    "is_national_holiday": true
+  },
+  {
+    "date": "2025-12-26",
+    "holiday_name": "Cuti Bersama Hari Raya Natal",
+    "is_national_holiday": true
+  }
+]

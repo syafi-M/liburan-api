@@ -1,0 +1,27 @@
+[
+  {
+    "date": "2025-05-01",
+    "holiday_name": "Hari Buruh Internasional",
+    "is_national_holiday": true
+  },
+  {
+    "date": "2025-05-12",
+    "holiday_name": "Hari Raya Waisak 2569 BE",
+    "is_national_holiday": true
+  },
+  {
+    "date": "2025-05-13",
+    "holiday_name": "Cuti Bersama Hari Raya Waisak 2569 BE",
+    "is_national_holiday": true
+  },
+  {
+    "date": "2025-05-29",
+    "holiday_name": "Kenaikan Yesus Kristus",
+    "is_national_holiday": true
+  },
+  {
+    "date": "2025-05-30",
+    "holiday_name": "Cuti Bersama Kenaikan Yesus Kristus",
+    "is_national_holiday": true
+  }
+]

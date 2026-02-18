@@ -1,0 +1,37 @@
+[
+  {
+    "date": "2025-04-01",
+    "holiday_name": "Hari Raya Idul Fitri 1446H",
+    "is_national_holiday": true
+  },
+  {
+    "date": "2025-04-02",
+    "holiday_name": "Cuti Bersama Hari Raya Idul Fitri 1446H",
+    "is_national_holiday": true
+  },
+  {
+    "date": "2025-04-03",
+    "holiday_name": "Cuti Bersama Hari Raya Idul Fitri 1446H",
+    "is_national_holiday": true
+  },
+  {
+    "date": "2025-04-04",
+    "holiday_name": "Cuti Bersama Hari Raya Idul Fitri 1446H",
+    "is_national_holiday": true
+  },
+  {
+    "date": "2025-04-07",
+    "holiday_name": "Cuti Bersama Hari Raya Idul Fitri 1446H",
+    "is_national_holiday": true
+  },
+  {
+    "date": "2025-04-18",
+    "holiday_name": "Wafat Yesus Kristus",
+    "is_national_holiday": true
+  },
+  {
+    "date": "2025-04-20",
+    "holiday_name": "Kebangkitan Yesus Kristus",
+    "is_national_holiday": true
+  }
+]
