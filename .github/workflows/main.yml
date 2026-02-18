@@ -1,4 +1,4 @@
-name: Auto Scrape Multi Year
+name: Auto Scrape Multi Year & Monthly
 
 on:
   schedule:
@@ -24,9 +24,9 @@ jobs:
       - name: Install dependencies
         run: npm install axios cheerio
 
-      - name: Run Scraper for Past, Present, and Future Year
+      - name: Run Scraper for Multi Year (Monthly & Yearly)
         run: |
-          # Menghitung tahun secara dinamis menggunakan perintah 'date'
+          # Menghitung tahun secara dinamis
           PREV_YEAR=$(date +%Y -d "last year")
           CURR_YEAR=$(date +%Y)
           NEXT_YEAR=$(date +%Y -d "next year")
@@ -38,5 +38,10 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Tambahkan semua file .json di root dan folder api/
           git add *.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Automated update: Multiple Years $(date)" && git push)
+          git add api/
+          
+          # Commit hanya jika ada perubahan data
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Automated update: Yearly & Monthly Data $(date)" && git push)
