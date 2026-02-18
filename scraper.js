@@ -2,20 +2,16 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('fs');
 
-async function scrapeHolidays() {
-
-    const args = process.argv.slice(2);
-    const year = args[0] || new Date().getFullYear().toString();
-
+async function scrapeByYear(year) {
     try {
-        console.log("Memulai scraping berdasarkan struktur HTML tanggalan.com...");
-        
+        console.log(`🚀 Sedang mengambil data untuk tahun: ${year}...`);
         const { data } = await axios.get(`https://www.tanggalan.com/${year}`, {
             headers: { 'User-Agent': 'Mozilla/5.0' }
         });
         
         const $ = cheerio.load(data);
         const holidays = [];
+        let currentMonth = "";
 
         const monthMap = {
             'januari': '01', 'februari': '02', 'maret': '03', 'april': '04',
@@ -23,22 +19,18 @@ async function scrapeHolidays() {
             'september': '09', 'oktober': '10', 'november': '11', 'desember': '12'
         };
 
-        // Kita cari setiap blok bulan (tag <ul>)
         $('article ul').each((i, ul) => {
-            // Ambil nama bulan dari <li> pertama
             const monthHeader = $(ul).find('li:first-child a').text().trim().toLowerCase();
-            const monthName = monthHeader.replace(/[0-9]/g, '').trim(); // hapus angka tahun
+            const monthName = monthHeader.replace(/[0-9]/g, '').trim();
             const monthCode = monthMap[monthName];
 
             if (monthCode) {
-                // Cari tabel hari libur di <li> terakhir dalam <ul> tersebut
                 $(ul).find('li table tr').each((j, tr) => {
                     const cols = $(tr).find('td');
                     if (cols.length >= 2) {
-                        const dateRaw = $(cols[0]).text().trim(); // Contoh: "21-22" atau "1"
+                        const dateRaw = $(cols[0]).text().trim();
                         const name = $(cols[1]).text().trim();
 
-                        // Pecah jika ada rentang tanggal (misal 21-22)
                         const days = dateRaw.split(/[-–]/);
                         const startDay = parseInt(days[0]);
                         const endDay = days[1] ? parseInt(days[1]) : startDay;
@@ -46,7 +38,7 @@ async function scrapeHolidays() {
                         for (let d = startDay; d <= endDay; d++) {
                             const formattedDay = d.toString().padStart(2, '0');
                             holidays.push({
-                                date: `2026-${monthCode}-${formattedDay}`,
+                                date: `${year}-${monthCode}-${formattedDay}`,
                                 holiday_name: name,
                                 is_national_holiday: true
                             });
@@ -57,16 +49,25 @@ async function scrapeHolidays() {
         });
 
         if (holidays.length > 0) {
-            fs.writeFileSync('holidays.json', JSON.stringify(holidays, null, 2));
-            console.log(`✅ BERHASIL! Ditemukan ${holidays.length} hari libur.`);
-            console.table(holidays);
+            fs.writeFileSync(`${year}.json`, JSON.stringify(holidays, null, 2));
+            console.log(`✅ Berhasil menyimpan ${year}.json`);
         } else {
-            console.log("❌ Data tidak ditemukan. Cek kembali selector.");
+            console.log(`⚠️ Data tahun ${year} kosong.`);
         }
-        
     } catch (error) {
-        console.error('❌ Error:', error.message);
+        console.error(`❌ Gagal scrape tahun ${year}:`, error.message);
     }
 }
 
-scrapeHolidays();
+async function main() {
+    const args = process.argv.slice(2);
+    // Jika tidak ada argumen, default ke tahun sekarang
+    const years = args.length > 0 ? args : [new Date().getFullYear().toString()];
+    
+    for (const year of years) {
+        await scrapeByYear(year);
+    }
+    console.log("\n✨ Semua tugas selesai!");
+}
+
+main();

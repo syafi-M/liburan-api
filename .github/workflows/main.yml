@@ -1,16 +1,10 @@
-name: Auto Scrape Holiday Data
+name: Auto Scrape Multi Year
 
 on:
   schedule:
-    - cron: '0 0 1 * *'
-  workflow_dispatch: 
-    inputs:
-      year:
-        description: 'Tahun untuk scraping (default: tahun ini)'
-        required: true
-        default: '2026'
+    - cron: '0 0 1 * *' # Jalan otomatis setiap tanggal 1
+  workflow_dispatch: # Tombol manual
 
-# TAMBAHKAN INI: Memberi izin robot untuk menulis ke repo
 permissions:
   contents: write
 
@@ -20,22 +14,29 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4 # Update ke v4 (lebih stabil)
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4 # Update ke v4
+        uses: actions/setup-node@v4
         with:
-          node-version: '20' # Gunakan Node 20 (LTS terbaru)
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install axios cheerio
 
-      - name: Run Scraper
-        run: node scraper.js ${{ github.event.inputs.year || '2026' }}
+      - name: Run Scraper for Past, Present, and Future Year
+        run: |
+          # Menghitung tahun secara dinamis menggunakan perintah 'date'
+          PREV_YEAR=$(date +%Y -d "last year")
+          CURR_YEAR=$(date +%Y)
+          NEXT_YEAR=$(date +%Y -d "next year")
+          
+          echo "Scraping years: $PREV_YEAR, $CURR_YEAR, $NEXT_YEAR"
+          node scraper.js $PREV_YEAR $CURR_YEAR $NEXT_YEAR
 
       - name: Commit and Push changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add *.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update holidays for ${{ github.event.inputs.year || '2026' }}" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Automated update: Multiple Years $(date)" && git push)
