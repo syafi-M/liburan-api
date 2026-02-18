@@ -3,10 +3,14 @@ const cheerio = require('cheerio');
 const fs = require('fs');
 
 async function scrapeHolidays() {
+
+    const args = process.argv.slice(2);
+    const year = args[0] || new Date().getFullYear().toString();
+
     try {
         console.log("Memulai scraping berdasarkan struktur HTML tanggalan.com...");
         
-        const { data } = await axios.get('https://www.tanggalan.com/2026', {
+        const { data } = await axios.get(`https://www.tanggalan.com/${year}`, {
             headers: { 'User-Agent': 'Mozilla/5.0' }
         });
         
