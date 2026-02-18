@@ -2,9 +2,12 @@ name: Auto Scrape Holiday Data
 
 on:
   schedule:
-    # Berjalan setiap tanggal 1 tiap bulan jam 00:00 UTC
     - cron: '0 0 1 * *'
-  workflow_dispatch: # Memungkinkan kamu menjalankan manual dari tombol di GitHub
+  workflow_dispatch: 
+
+# TAMBAHKAN INI: Memberi izin robot untuk menulis ke repo
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -12,12 +15,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Update ke v4 (lebih stabil)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4 # Update ke v4
         with:
-          node-version: '18'
+          node-version: '20' # Gunakan Node 20 (LTS terbaru)
 
       - name: Install dependencies
         run: npm install axios cheerio
@@ -30,5 +33,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add holidays.json
-          git commit -m "Automated update: $(date)" || exit 0
-          git push
+          # Commit hanya jika ada perubahan agar tidak error
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Automated update: $(date)" && git push)
